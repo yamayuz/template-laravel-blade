@@ -1,0 +1,42 @@
+version: '3'
+services:
+  nginx:
+    build:
+      context: .
+      target: nginx
+    ports:
+      - '8000:80'
+    depends_on:
+      - myapp
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./myapp/public:/var/www/myapp/public
+      - ./myapp/storage:/var/www/myapp/storage
+
+  myapp:
+    build:
+      context: .
+      target: myapp
+    volumes:
+      - /var/www/myapp/vendor/
+      - /var/www/myapp/bootstrap/cache
+      - ./myapp:/var/www/myapp:delegated
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+    depends_on:
+      - mysql
+    ports:
+      - 5173:5173
+
+  mysql:
+    image: mysql:5.7.16
+    environment:
+      MYSQL_DATABASE: laravel_myapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/db/data:/var/lib/mysql
+      - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+
