@@ -1,0 +1,4 @@
+# /myapp/node_modules
+/myapp/public/hot
+/myapp/vendor
+/docker/DB
